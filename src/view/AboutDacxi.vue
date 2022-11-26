@@ -15,6 +15,6 @@
         margin: auto;
         margin-top: 5rem;
         color: var(--soft-blue);
-        animation: appear 2s;
+        animation: appear 1.5s;
     }
 </style>

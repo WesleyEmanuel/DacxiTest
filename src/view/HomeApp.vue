@@ -2,42 +2,49 @@
     <v-app class="table">
       <v-data-table
       :headers="headers"
-      :items="desserts"
-      :search="search"
+      :items="coins"
+      :loading="loading"
       >
+        <template v-slot:[`item.img`]="{ item }">
+          <img :src="item.image" alt="" width="20px">
+        </template>
         <template v-slot:top>
-          <v-row>
-            <v-col cols="3">
+          <v-row class="d-flex justify-center mb-2">
+            <v-col cols="4">
               <v-text-field
-              v-model="search"
+              v-model="date"
               append-icon="mdi-calendar"
-              label="dd/mm/yyyy"
+              label="dd-mm-yyyy"
               single-line
               hide-details
-              v-mask="'##/##/####'"
+              v-mask="'##-##-####'"
               ></v-text-field>
             </v-col>
             <v-col cols="4">
-              <v-text-field
-              v-model="search"
-              append-icon="mdi-magnify"
-              label="Search Coin"
+              <v-autocomplete
+              v-model="selectedCoin"
+              label="Select Coin"
+              :items="coinsName"
               single-line
               hide-details
-              v-mask="'##/##/####'"
-              ></v-text-field>
+              ></v-autocomplete>
             </v-col>
-            <v-col>
+            <!-- <v-col>
               <v-autocomplete
                 v-model="category"
                 :items="categories"
                 label="Category"
               ></v-autocomplete>
-            </v-col>
+            </v-col> -->
             <v-col cols="2">
-              <v-btn class="button mt-5" small color="var(--dacxi-color)"> Search </v-btn>
+              <v-btn class="button mt-5" small color="var(--dacxi-color)" @click="search"> Search </v-btn>
             </v-col>
           </v-row>
+        </template>
+        <template v-slot:[`item.price-change`]="{ item }">
+          <b :class="item.price_change_24h >= 1 ? 'green--text' : item.price_change_24h < 0 ? 'red--text' : 'grey--text'">
+            {{item.price_change_24h}} %
+          </b>
         </template>
       </v-data-table>
     </v-app>
@@ -46,80 +53,57 @@
   export default {
     data () {
       return {
-        search: '',
-        category:'',
-        categories:[],
+        loading: false,
+        date: '',
+        coins: [],
+        coinsName: [],
+        selectedCoin: "",
         headers: [
+        { text: "", value: 'img' },
           {
-            text: 'Dessert (100g serving)',
+            text: 'Name',
             align: 'start',
             sortable: false,
             value: 'name',
           },
-          { text: 'Calories', value: 'calories' },
-          { text: 'Fat (g)', value: 'fat' },
-          { text: 'Carbs (g)', value: 'carbs' },
-          { text: 'Protein (g)', value: 'protein' },
-          { text: 'Iron (%)', value: 'iron' },
+          { text: 'Symbol', value: 'symbol' },
+          { text: 'Current Price', value: 'current_price' },
+          { text: 'Price Change (24h)', value: 'price-change'},
+          { text: 'Market Cap', value: 'market_cap' },
         ],
         desserts: [
-          {
-            name: 'Frozen Yogurt',
-            calories: 159,
-            fat: 6.0,
-            carbs: 24,
-            protein: 4.0,
-            iron: '1%',
-          },
-          {
-            name: 'Ice cream sandwich',
-            calories: 237,
-            fat: 9.0,
-            carbs: 37,
-            protein: 4.3,
-            iron: '1%',
-          },
-          {
-            name: 'Eclair',
-            calories: 262,
-            fat: 16.0,
-            carbs: 23,
-            protein: 6.0,
-            iron: '7%',
-          },
-          {
-            name: 'Cupcake',
-            calories: 305,
-            fat: 3.7,
-            carbs: 67,
-            protein: 4.3,
-            iron: '8%',
-          },
-          {
-            name: 'Gingerbread',
-            calories: 356,
-            fat: 16.0,
-            carbs: 49,
-            protein: 3.9,
-            iron: '16%',
-          },
         ],
       }
     },
     mounted(){
-      this.categoriesList();
+      this.listCoins();
     },
     methods:{
-      categoriesList(){
-        this.loadinCategories = true;
-        this.$http.get("coins/categories/list")
+      listCoins(){
+        this.loading = true;
+        this.$http.get(
+          "coins/markets?vs_currency=brl&ids=bitcoin%2C%20dacxi%2C%20ethereum%2C%20cosmos"
+        )
         .then(resp => {
+          this.loading = true;
           if(resp.status == 200){
-            resp.data.map(category => this.categories.push(category.name))
+            this.coins = resp.data.map(coin => {
+              return {
+                ...coin, 
+                current_price: `R$ ${coin.current_price.toLocaleString()}`,
+                price_change_24h: parseFloat(`${coin.price_change_24h.toFixed(2)}`),
+                // price_change_24h: 2,
+                market_cap: `R$ ${coin.market_cap.toLocaleString()}`,
+              };
+            })
+            resp.data.map(coin => this.coinsName.push(coin.name))
           } else{
             console.log(resp.message)
           }
-        }).finally(()=> console.log(this.categories))
+        }).finally(()=> this.loading = false)
+      },
+      search(){
+        this.listCoins()
       }
     },
   }
