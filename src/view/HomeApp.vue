@@ -1,4 +1,5 @@
 <template>
+  <div>
     <v-app class="table">
       <v-data-table
       :headers="headers"
@@ -27,17 +28,12 @@
               :items="coinsName"
               single-line
               hide-details
+              item-text="name"
+              item-value="id"
               ></v-autocomplete>
             </v-col>
-            <!-- <v-col>
-              <v-autocomplete
-                v-model="category"
-                :items="categories"
-                label="Category"
-              ></v-autocomplete>
-            </v-col> -->
             <v-col cols="2">
-              <v-btn class="button mt-5" small color="var(--dacxi-color)" @click="search"> Search </v-btn>
+              <v-btn class="white--text mt-5" small color="var(--dacxi-color)" @click="search"> Search </v-btn>
             </v-col>
           </v-row>
         </template>
@@ -47,12 +43,30 @@
           </b>
         </template>
       </v-data-table>
+      <v-snackbar v-model="snackbarOptions.active" :color="snackbarOptions.color">
+        {{snackbarOptions.message}}
+        <template v-slot:action="{ attrs }">
+          <v-btn
+            text
+            v-bind="attrs"
+            @click="snackbarOptions.active = false"
+          >
+            Ok
+          </v-btn>
+        </template>
+      </v-snackbar>
     </v-app>
+  </div>
 </template>
 <script>
   export default {
     data () {
       return {
+        snackbarOptions: {
+          active: false,
+          message: "",
+          color: ""
+        },
         loading: false,
         date: '',
         coins: [],
@@ -76,7 +90,11 @@
       }
     },
     mounted(){
+      console.log(this.text);
       this.listCoins();
+      setInterval(() => {
+        this.listCoins();
+      }, 300000)
     },
     methods:{
       listCoins(){
@@ -96,14 +114,46 @@
                 market_cap: `R$ ${coin.market_cap.toLocaleString()}`,
               };
             })
-            resp.data.map(coin => this.coinsName.push(coin.name))
+            this.coinsName = resp.data
           } else{
             console.log(resp.message)
           }
         }).finally(()=> this.loading = false)
       },
       search(){
-        this.listCoins()
+        this.loading = true;
+        this.$http.get(
+          `coins/${this.selectedCoin}/history?date=${this.date}&localization=brl`
+        ).then(resp => {
+          const coin = resp.data;
+          if(!coin.market_data){
+            this.snackbar(
+              "Data not found", 
+              "error"
+            )
+          }
+          this.coins = [{
+            name: coin.name,
+            symbol: coin.symbol,
+            current_price: `R$ ${coin.market_data.current_price.brl.toFixed(2).toLocaleString()}`,
+            price_change_24h: "- ",
+            market_cap: `R$ ${coin.market_data.market_cap.brl.toFixed(2).toLocaleString()}`,
+            image: coin.image.small
+          }]
+        }).catch((resp) => {
+            this.snackbar(
+              resp.response.data.error, 
+              "error"
+            )
+          }
+        ).finally(() => this.loading = false)
+      },
+      snackbar(message, color){
+        this.snackbarOptions = {
+          active: true,
+          message,
+          color 
+        }
       }
     },
   }
@@ -111,8 +161,6 @@
 <style>
   .table{
     animation: appear 2s;
-  }
-  .button{
-    color: #fff !important;
+    margin-top: 5rem;
   }
 </style>

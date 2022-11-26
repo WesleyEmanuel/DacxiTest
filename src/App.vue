@@ -12,6 +12,12 @@
     <main>
       <router-view></router-view>
     </main>
+    <footer id="footer">
+          <span>
+            Developed by 
+           <a href="https://www.linkedin.com/in/wesley-alves-7b05781b9" target="_blank">Wesley Emanuel</a>
+          </span>
+        </footer>
   </div>
 </template>
 
@@ -52,5 +58,12 @@ export default {
     width: 70vw;
     margin: auto;
     margin-top: 2rem;
+  }
+  #footer{
+    font-size: small;
+    position: fixed;
+    bottom: 1rem;
+    color: gray;
+    margin-left: 35rem;
   }
 </style>
