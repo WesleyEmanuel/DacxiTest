@@ -10,7 +10,33 @@
           <img :src="item.image" alt="" width="20px">
         </template>
         <template v-slot:top>
-          <v-row class="d-flex justify-center mb-2">
+          <div class="d-flex justify-center mb-2 mobile">
+            <v-col cols="4" class="mobile-inputs">
+              <v-text-field
+              v-model="date"
+              append-icon="mdi-calendar"
+              label="dd-mm-yyyy"
+              single-line
+              hide-details
+              v-mask="'##-##-####'"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="4" class="mobile-inputs">
+              <v-autocomplete
+              v-model="selectedCoin"
+              label="Select Coin"
+              :items="coinsName"
+              single-line
+              hide-details
+              item-text="name"
+              item-value="id"
+              ></v-autocomplete>
+            </v-col>
+            <v-col cols="2" class="mobile-inputs">
+              <v-btn class="white--text mt-5" small color="var(--dacxi-color)" @click="search"> Search </v-btn>
+            </v-col>
+          </div>
+          <!-- <v-row class="d-flex justify-center mb-2">
             <v-col cols="4">
               <v-text-field
               v-model="date"
@@ -35,7 +61,7 @@
             <v-col cols="2">
               <v-btn class="white--text mt-5" small color="var(--dacxi-color)" @click="search"> Search </v-btn>
             </v-col>
-          </v-row>
+          </v-row> -->
         </template>
         <template v-slot:[`item.price-change`]="{ item }">
           <b :class="item.price_change_24h >= 1 ? 'green--text' : item.price_change_24h < 0 ? 'red--text' : 'grey--text'">
@@ -162,5 +188,19 @@
   .table{
     animation: appear 2s;
     margin-top: 5rem;
+    margin-bottom: 1rem;
+  }
+  @media (max-width: 850px) {
+    .table{
+      margin-top: 1rem;
+    }
+    .mobile{
+      flex-direction: column;
+
+    }
+    .mobile-inputs{
+      max-width: 100%;
+      text-align: center;
+    }
   }
 </style>

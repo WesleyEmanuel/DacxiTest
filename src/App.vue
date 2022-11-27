@@ -62,8 +62,11 @@ export default {
   #footer{
     font-size: small;
     position: fixed;
-    bottom: 1rem;
-    left: 42vw;
+    bottom: 0;
+    padding: 1rem;
     color: gray;
+    width: 100%;
+    text-align: center;  
+    background-color: white;
   }
 </style>

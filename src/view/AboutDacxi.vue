@@ -18,5 +18,12 @@
         animation: appear 1.5s;
         text-align: justify;
     }
-    
+    @media (max-width: 850px) {
+        p{
+            width: 80vw;
+            text-align: start;
+            margin-top: 0;
+            margin-bottom: 5rem;
+        }
+    }
 </style>

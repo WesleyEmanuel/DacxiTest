@@ -41,4 +41,14 @@
     button:hover{
         background-color: var(--dacxi-color);
     }
+    @media (max-width: 850px) {
+        .content{
+            gap: 2rem;
+        }
+        p{
+            width: 80vw;
+            margin: 0;
+            margin-top: 2rem;
+        }
+    }
 </style>
