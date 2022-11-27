@@ -89,7 +89,7 @@
         ],
       }
     },
-    mounted(){
+    beforeMount(){
       console.log(this.text);
       this.listCoins();
       setInterval(() => {

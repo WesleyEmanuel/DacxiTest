@@ -1,7 +1,6 @@
 <template>
     <div>
         <p>Dacxi is a global pioneer of Crypto Wealth. Using blockchain innovation, our safe and simple Crypto Wealth platform gives investors around the world access to a carefully curated selection of digital assets.</p>
-        
     </div>
 </template>
 <script>

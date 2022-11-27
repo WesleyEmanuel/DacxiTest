@@ -17,7 +17,7 @@
             Developed by 
            <a href="https://www.linkedin.com/in/wesley-alves-7b05781b9" target="_blank">Wesley Emanuel</a>
           </span>
-        </footer>
+    </footer>
   </div>
 </template>
 
@@ -63,7 +63,7 @@ export default {
     font-size: small;
     position: fixed;
     bottom: 1rem;
+    left: 42vw;
     color: gray;
-    margin-left: 35rem;
   }
 </style>
